@@ -7,10 +7,12 @@
 #include "Logging/LogMacros.h"
 #include "SaveryEntertainmentCharacter.generated.h"
 
+class ASEGravityController;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
+class ASEGameState;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -32,9 +34,17 @@ class ASaveryEntertainmentCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
 
-	/** Jump Input Action */
+	/** Next Colour Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* JumpAction;
+	UInputAction* NextColourAction;
+
+	/** Previous Colour Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* PreviousColourAction;
+
+	/** Gravity Up Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* GravityUpAction;
 
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -50,18 +60,33 @@ public:
 
 protected:
 
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 			
+	/** Called for next colour input */
+	void NextColour(const FInputActionValue& Value);
 
-protected:
+	/** Called for previous colour input */
+	void PreviousColour(const FInputActionValue& Value);
+
+	/** Called for gravity up input */
+	void GravityUp(const FInputActionValue& Value);
 
 	virtual void NotifyControllerChanged() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UPROPERTY()
+	ASEGameState* SEGameState;
+
+	UPROPERTY()
+	ASEGravityController* SEGravityController;
 
 public:
 	/** Returns CameraBoom subobject **/

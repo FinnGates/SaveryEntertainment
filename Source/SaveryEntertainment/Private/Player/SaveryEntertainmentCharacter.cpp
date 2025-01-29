@@ -10,6 +10,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Game/SEGameState.h"
+#include "Player/SEGravityController.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -32,7 +34,6 @@ ASaveryEntertainmentCharacter::ASaveryEntertainmentCharacter()
 
 	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
 	// instead of recompiling to adjust them
-	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
@@ -52,6 +53,15 @@ ASaveryEntertainmentCharacter::ASaveryEntertainmentCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+}
+
+void ASaveryEntertainmentCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SEGameState = GetWorld()->GetGameState<ASEGameState>();
+
+	SEGravityController = GetController<ASEGravityController>();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -76,9 +86,14 @@ void ASaveryEntertainmentCharacter::SetupPlayerInputComponent(UInputComponent* P
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		// Next Colour
+		EnhancedInputComponent->BindAction(NextColourAction, ETriggerEvent::Started, this, &ASaveryEntertainmentCharacter::NextColour);
+
+		// Next Colour
+		EnhancedInputComponent->BindAction(PreviousColourAction, ETriggerEvent::Started, this, &ASaveryEntertainmentCharacter::PreviousColour);
+
+		// Gravity Up
+		EnhancedInputComponent->BindAction(GravityUpAction, ETriggerEvent::Started, this, &ASaveryEntertainmentCharacter::GravityUp);
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASaveryEntertainmentCharacter::Move);
@@ -99,15 +114,18 @@ void ASaveryEntertainmentCharacter::Move(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
+		const FVector GravityDirection = GetCharacterMovement()->GetGravityDirection();
 		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator Rotation = SEGravityController->GetGravityRelativeRotation(SEGravityController->GetControlRotation(), GravityDirection) ;
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
+		const FRotator RollYawRotation(0, Rotation.Yaw, Rotation.Roll);
+		
+		
 		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector ForwardDirection = FRotationMatrix(SEGravityController->GetGravityWorldRotation(YawRotation, GravityDirection)).GetUnitAxis(EAxis::X);
 	
 		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		const FVector RightDirection = FRotationMatrix(SEGravityController->GetGravityWorldRotation(RollYawRotation, GravityDirection)).GetUnitAxis(EAxis::Y);
 
 		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.Y);
@@ -125,5 +143,27 @@ void ASaveryEntertainmentCharacter::Look(const FInputActionValue& Value)
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void ASaveryEntertainmentCharacter::NextColour(const FInputActionValue& Value)
+{
+	SEGameState->ChangeColour(true);
+}
+
+void ASaveryEntertainmentCharacter::PreviousColour(const FInputActionValue& Value)
+{
+	SEGameState->ChangeColour(false);
+}
+
+void ASaveryEntertainmentCharacter::GravityUp(const FInputActionValue& Value)
+{
+	if (GetCharacterMovement()->GetGravityDirection() != FVector::DownVector)
+	{
+		GetCharacterMovement()->SetGravityDirection(FVector::DownVector);
+	}
+	else
+	{
+		GetCharacterMovement()->SetGravityDirection(FVector::UpVector);
 	}
 }
