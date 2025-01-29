@@ -8,6 +8,7 @@
  * A Player Controller class which adds input-handling functionality for
  * CharacterMovementController's custom gravity mechanics.
  */
+//This class was provided in the Unreal Engine documentation when I was researching custom gravity
 UCLASS()
 class ASEGravityController : public APlayerController
 {

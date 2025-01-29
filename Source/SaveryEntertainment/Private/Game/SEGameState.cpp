@@ -12,16 +12,22 @@ void ASEGameState::ChangeColour(bool bDirection)
 {
 	if (bDirection)
 	{
-		CurrentColour = ASEUtilitySingleton::GetNextColour(CurrentColour);
+		CurrentColour = USEUtilitySingleton::GetNextColour(CurrentColour);
 	}
 	else
 	{
-		CurrentColour = ASEUtilitySingleton::GetPreviousColour(CurrentColour);
+		CurrentColour = USEUtilitySingleton::GetPreviousColour(CurrentColour);
 	}
 	
 	OnColourChanged.Broadcast(CurrentColour);
 }
 
+void ASEGameState::LockColour(bool bIsLocked, EColourTypes LockColour) const
+{
+	OnColourLocked.Broadcast(bIsLocked, LockColour);
+	
+	if (!bIsLocked) OnColourChanged.Broadcast(CurrentColour);
+}
 //I've made it so this is the only place where colour needs to be changed if the decision is to change the shade or tone
 FColor ASEGameState::GetColour(EColourTypes Colour) const
 {

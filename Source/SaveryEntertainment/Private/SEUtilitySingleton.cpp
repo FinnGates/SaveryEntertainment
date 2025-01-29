@@ -3,11 +3,11 @@
 
 #include "SEUtilitySingleton.h"
 
-ASEUtilitySingleton::ASEUtilitySingleton()
+USEUtilitySingleton::USEUtilitySingleton()
 {
 }
 
-bool ASEUtilitySingleton::DoesColourCrossover(EColourTypes Colour, EColourTypes ComparativeColour)
+bool USEUtilitySingleton::DoesColourCrossover(EColourTypes Colour, EColourTypes ComparativeColour)
 {
 	switch (Colour)
 	{
@@ -27,7 +27,7 @@ bool ASEUtilitySingleton::DoesColourCrossover(EColourTypes Colour, EColourTypes 
 	}
 }
 
-EColourTypes ASEUtilitySingleton::GetNextColour(EColourTypes Colour)
+EColourTypes USEUtilitySingleton::GetNextColour(EColourTypes Colour)
 {
 	switch (Colour)
 	{
@@ -47,7 +47,7 @@ EColourTypes ASEUtilitySingleton::GetNextColour(EColourTypes Colour)
 	}
 }
 
-EColourTypes ASEUtilitySingleton::GetPreviousColour(EColourTypes Colour)
+EColourTypes USEUtilitySingleton::GetPreviousColour(EColourTypes Colour)
 {
 	switch (Colour)
 	{

@@ -17,6 +17,8 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
+DECLARE_DELEGATE(FOnInteract);
+
 UCLASS(config=Game)
 class ASaveryEntertainmentCharacter : public ACharacter
 {
@@ -46,6 +48,10 @@ class ASaveryEntertainmentCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* GravityUpAction;
 
+	/** Interact Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* InteractAction;
+
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
@@ -57,7 +63,7 @@ class ASaveryEntertainmentCharacter : public ACharacter
 public:
 	ASaveryEntertainmentCharacter();
 	
-
+	FOnInteract InteractDelegate;
 protected:
 
 	// Called when the game starts or when spawned
@@ -77,6 +83,9 @@ protected:
 
 	/** Called for gravity up input */
 	void GravityUp(const FInputActionValue& Value);
+
+	/** Called for interact input */
+	void Interact(const FInputActionValue& Value);
 
 	virtual void NotifyControllerChanged() override;
 

@@ -94,6 +94,9 @@ void ASaveryEntertainmentCharacter::SetupPlayerInputComponent(UInputComponent* P
 
 		// Gravity Up
 		EnhancedInputComponent->BindAction(GravityUpAction, ETriggerEvent::Started, this, &ASaveryEntertainmentCharacter::GravityUp);
+		
+		// Interact
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ASaveryEntertainmentCharacter::Interact);
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASaveryEntertainmentCharacter::Move);
@@ -165,5 +168,13 @@ void ASaveryEntertainmentCharacter::GravityUp(const FInputActionValue& Value)
 	else
 	{
 		GetCharacterMovement()->SetGravityDirection(FVector::UpVector);
+	}
+}
+
+void ASaveryEntertainmentCharacter::Interact(const FInputActionValue& Value)
+{
+	if (InteractDelegate.IsBound())
+	{
+		InteractDelegate.Execute();
 	}
 }

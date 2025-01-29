@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SEUtilitySingleton.generated.h"
 
 UENUM(BlueprintType)
 enum class EColourTypes : uint8
@@ -14,20 +13,16 @@ enum class EColourTypes : uint8
 	Blue,
 	Green,
 	Yellow
-   };
+};
 
 /**
  * 
  */
 
-//I would have usually made this a data class for the colours and then a utility singleton for the static functions but
-//for a project this small it seemed like unnecessary work and complication.
-UCLASS()
-class SAVERYENTERTAINMENT_API ASEUtilitySingleton : public AActor
+class SAVERYENTERTAINMENT_API USEUtilitySingleton
 {
-	GENERATED_BODY()
 public:
-	ASEUtilitySingleton();
+	USEUtilitySingleton();
 	
 	static bool DoesColourCrossover(EColourTypes Colour, EColourTypes ComparativeColour);
 	static EColourTypes GetNextColour(EColourTypes Colour);

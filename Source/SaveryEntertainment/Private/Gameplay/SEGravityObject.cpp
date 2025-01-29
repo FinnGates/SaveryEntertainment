@@ -9,7 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
-ASEGravityObject::ASEGravityObject()
+ASEGravityObject::ASEGravityObject(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	OverlapBox = CreateDefaultSubobject<UBoxComponent>(FName("OverlapBox"));
 	OverlapBox->SetupAttachment(Shape);
@@ -27,13 +27,16 @@ void ASEGravityObject::NotifyColourChange(EColourTypes NewColour)
 {
 	Super::NotifyColourChange(NewColour);
 
-	if (ASEUtilitySingleton::DoesColourCrossover(NewColour, AssignedColour))
+	if (!bLocked)
 	{
-		OverlapBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	}
-	else
-	{
-		OverlapBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		if (USEUtilitySingleton::DoesColourCrossover(NewColour, AssignedColour))
+		{
+			OverlapBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		}
+		else
+		{
+			OverlapBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
 	}
 }
 

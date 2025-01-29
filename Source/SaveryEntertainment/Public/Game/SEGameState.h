@@ -14,6 +14,7 @@ enum class EColourTypes : uint8;
  */
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnColourChanged, EColourTypes);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnColourLocked, bool, EColourTypes);
 
 UCLASS()
 class SAVERYENTERTAINMENT_API ASEGameState : public AGameStateBase
@@ -27,8 +28,11 @@ public:
 	FColor GetColour(EColourTypes Colour) const;
 	
 	void ChangeColour(bool bDirection);
+
+	void LockColour(bool bIsLocked, EColourTypes LockColour) const;
 	
 	FOnColourChanged OnColourChanged;
+	FOnColourLocked OnColourLocked;
 	
 protected:
 	UPROPERTY(EditAnywhere)

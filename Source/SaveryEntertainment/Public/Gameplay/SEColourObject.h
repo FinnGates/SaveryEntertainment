@@ -16,12 +16,17 @@ class SAVERYENTERTAINMENT_API ASEColourObject : public AActor
 	
 public:	
 	// Sets default values for this actor's properties
-	ASEColourObject();
+	ASEColourObject(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION()
 	virtual void NotifyColourChange(EColourTypes NewColour);
+	UFUNCTION()
+	virtual void NotifyColourLocked(bool bIsLocked, EColourTypes LockedColour);
 
 protected:
+	UPROPERTY(EditAnywhere)
+	USceneComponent* Root;
+	
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Shape;
 	
@@ -31,7 +36,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Colour)
 	EColourTypes AssignedColour;
 
-	UPROPERTY(EditAnywhere, Category = Colour)
+	UPROPERTY()
 	UMaterialInstanceDynamic* DynamicColour;
 
 	UPROPERTY()
@@ -48,6 +53,9 @@ protected:
 
 	UPROPERTY()
 	float DesiredOpacity;
+
+	UPROPERTY()
+	bool bLocked = false;
 	
 public:	
 	// Called every frame

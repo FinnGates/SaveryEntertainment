@@ -7,27 +7,41 @@
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
-ASEColourObject::ASEColourObject()
+ASEColourObject::ASEColourObject(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Root = CreateDefaultSubobject<USceneComponent>(FName("Root"));
+	SetRootComponent(Root);
+	
 	Shape = CreateDefaultSubobject<UStaticMeshComponent>(FName("Shape"));
-	Shape->SetupAttachment(RootComponent);
+	Shape->SetupAttachment(Root);
 }
 
 void ASEColourObject::NotifyColourChange(EColourTypes NewColour)
 {
-	if (ASEUtilitySingleton::DoesColourCrossover(NewColour, AssignedColour))
+	if (!bLocked)
 	{
-		Shape->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		DesiredColour = FVector(SEGameState->GetColour(NewColour));
-		DesiredOpacity = 1.f;
+		if (USEUtilitySingleton::DoesColourCrossover(NewColour, AssignedColour))
+		{
+			Shape->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			DesiredColour = FVector(SEGameState->GetColour(NewColour));
+			DesiredOpacity = 1.f;
+		}
+		else
+		{
+			DesiredOpacity = 0.f;
+			Shape->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
 	}
-	else
+}
+
+void ASEColourObject::NotifyColourLocked(bool bIsLocked, EColourTypes LockedColour)
+{
+	if (AssignedColour != EColourTypes::Default && USEUtilitySingleton::DoesColourCrossover(LockedColour, AssignedColour))
 	{
-		DesiredOpacity = 0.f;
-		Shape->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		bLocked = bIsLocked;
 	}
 }
 
@@ -43,6 +57,7 @@ void ASEColourObject::BeginPlay()
 	if (SEGameState)
 	{
 		SEGameState->OnColourChanged.AddUObject(this, &ASEColourObject::NotifyColourChange);
+		SEGameState->OnColourLocked.AddUObject(this, &ASEColourObject::NotifyColourLocked);
 	}
 	
 	

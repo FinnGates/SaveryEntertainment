@@ -16,7 +16,8 @@ class SAVERYENTERTAINMENT_API ASEGravityObject : public ASEColourObject
 {
 	GENERATED_BODY()
 
-	ASEGravityObject();
+public:
+	ASEGravityObject(const FObjectInitializer& ObjectInitializer);
 	
 protected:
 	UPROPERTY(EditAnywhere)
